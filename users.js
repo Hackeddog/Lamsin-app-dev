@@ -1,6 +1,4 @@
-let users = [
-    {id: 1, name: "John Doe", email: "john.doe@example.com"},
-    {id: 2, name: "Jane Smith", email: "jane.smith@example.com"}
-];
+// Demo database: users are kept in memory in this JSON-style array.
+const users = [];
 
 module.exports = users;

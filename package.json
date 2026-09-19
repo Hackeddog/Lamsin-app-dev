@@ -1,15 +1,12 @@
 {
-  "name": "lamsin-app-dev-2026",
+  "name": "user-auth-rest-api",
   "version": "1.0.0",
-  "description": "This repository contains my code for the **Applications Development and Emerging Technologies (AppDev)** subject, specifically the Prefinal Examination.",
-  "main": "index.js",
+  "description": "A simple Express user signup and login authentication demo.",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "express": "^5.2.1"
   },

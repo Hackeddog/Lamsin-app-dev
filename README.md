@@ -1,23 +1,21 @@
-# TaskFlow To-Do List Application
+# Authly REST API Authentication Demo
 
-A draft website for the Prelim Examination in Applications Development and Emerging Technologies.
+A simple Express.js signup and login system backed by a JavaScript JSON-style array. The frontend uses Tailwind CSS via its CDN build.
 
-## Files
+## Run
 
-- `index.html` - Tailwind CSS layout and app structure
-- `app.js` - JavaScript logic for DOM manipulation, events, validation, CRUD, state, Local Storage, and async Delete All
+```bash
+bun install
+bun run dev
+```
 
-## Features
+Open <http://localhost:3000> in a browser.
 
-- Add tasks through a form without page reload
-- Prevent empty task submissions with visual feedback
-- Display tasks dynamically in a structured list
-- Mark tasks as done and keep the state after reload
-- Edit task names
-- Delete individual tasks
-- Delete all tasks with a simulated 2-second asynchronous loading state
-- Persist data using Local Storage
+## API
 
-## How to run
+| Method | Endpoint | Success | Validation |
+| --- | --- | --- | --- |
+| POST | `/api/signup` | `201` | `400` for empty fields, `409` for an existing email/username |
+| POST | `/api/login` | `200` | `400` for empty fields, `401` for invalid credentials |
 
-Open `index.html` in a browser.
+Signup expects `email`, `username`, and `password` in a JSON request body. Login expects `username` and `password` in the JSON request body. Users are stored in `users.js` for the lifetime of the server process.
