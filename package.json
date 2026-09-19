@@ -1,0 +1,19 @@
+{
+  "name": "lamsin-app-dev-2026",
+  "version": "1.0.0",
+  "description": "This repository contains my code for the **Applications Development and Emerging Technologies (AppDev)** subject, specifically the Prefinal Examination.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
