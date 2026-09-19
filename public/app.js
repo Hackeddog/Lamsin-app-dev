@@ -12,6 +12,13 @@ function clearError() {
   errorMessage.classList.add('hidden');
 }
 
+function clearAuthNotice() {
+  const authNotice = document.querySelector('[data-auth-notice]');
+  authNotice?.classList.add('hidden');
+  if (authNotice) authNotice.textContent = '';
+  sessionStorage.removeItem('authNotice');
+}
+
 form?.addEventListener('submit', async (event) => {
   event.preventDefault();
   clearError();
@@ -31,6 +38,7 @@ form?.addEventListener('submit', async (event) => {
     const result = await response.json();
 
     if (!response.ok) {
+      clearAuthNotice();
       showError(`${result.message} (Status ${response.status})`);
       return;
     }
@@ -39,6 +47,7 @@ form?.addEventListener('submit', async (event) => {
     sessionStorage.setItem('authNotice', `${result.message} (Status ${response.status})`);
     window.location.href = 'index.html';
   } catch (error) {
+    clearAuthNotice();
     showError('Unable to reach the server. Please try again.');
   } finally {
     submitButton.disabled = false;
@@ -47,6 +56,7 @@ form?.addEventListener('submit', async (event) => {
 });
 
 form?.querySelectorAll('input').forEach((input) => {
+  input.addEventListener('click', clearError);
   input.addEventListener('input', clearError);
 });
 
