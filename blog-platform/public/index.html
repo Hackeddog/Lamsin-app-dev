@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Ninja</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#/blogs">
+        <span class="brand-title">BLOG NINJA</span>
+        <span class="brand-subtitle">A NET NINJA SITE</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#/blogs">BLOGS</a>
+        <a href="#/about">ABOUT</a>
+        <a id="newBlogLink" class="hidden" href="#/new">NEW BLOG</a>
+        <button id="authButton" class="nav-button" type="button">LOGIN</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app" class="page-shell"></main>
+
+  <footer class="site-footer">Copyright © Blog Ninja 2026</footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
