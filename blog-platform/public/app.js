@@ -43,15 +43,39 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
 }
 
-function showAuth() {
+function showAuth(mode = 'login', notice = '') {
   const panel = $('#auth-panel');
-  panel.classList.toggle('hidden');
-  panel.innerHTML = `<form id="login-form"><h2>Login</h2><input id="username" placeholder="Username" required /><input id="password" type="password" placeholder="Password" required /><button>Login</button><p id="auth-message"></p></form>`;
-  $('#login-form').addEventListener('submit', async (event) => {
+  const registering = mode === 'register';
+  panel.classList.remove('hidden');
+  panel.innerHTML = `<form id="auth-form">
+    <h2>${registering ? 'Create an account' : 'Login'}</h2>
+    <input id="username" placeholder="Username" required />
+    <input id="password" type="password" placeholder="Password" required />
+    ${registering ? '<select id="role" required><option value="reader">Reader</option><option value="author">Author</option><option value="admin">Admin</option></select>' : ''}
+    <button>${registering ? 'Register' : 'Login'}</button>
+    <button type="button" id="auth-switch">${registering ? 'Already have an account? Login' : 'No account? Register'}</button>
+    <p id="auth-message">${notice}</p>
+  </form>`;
+
+  $('#auth-switch').addEventListener('click', () => showAuth(registering ? 'login' : 'register'));
+  $('#auth-form').addEventListener('submit', async (event) => {
     event.preventDefault();
-    const response = await fetch(`${AUTH_URL}/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: $('#username').value, password: $('#password').value }) });
+    const body = { username: $('#username').value, password: $('#password').value };
+    const endpoint = registering ? '/register' : '/login';
+    if (registering) body.role = $('#role').value;
+
+    const response = await fetch(`${AUTH_URL}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
     const data = await response.json();
     if (!response.ok) return $('#auth-message').textContent = data.error;
+
+    if (registering) {
+      return showAuth('login', 'Registration successful. Please log in.');
+    }
+
     localStorage.setItem(ACCESS_KEY, data.accessToken);
     localStorage.setItem(REFRESH_KEY, data.refreshToken);
     panel.classList.add('hidden');
