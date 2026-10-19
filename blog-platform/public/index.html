@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Platform</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Blog Platform</h1>
+    <button id="auth-button">Login</button>
+  </header>
+  <main>
+    <section id="auth-panel" class="panel hidden"></section>
+    <section class="panel">
+      <h2>Posts</h2>
+      <div id="posts">Loading...</div>
+    </section>
+    <section id="editor" class="panel hidden">
+      <h2>New post</h2>
+      <form id="post-form">
+        <input id="title" placeholder="Title" required />
+        <textarea id="content" placeholder="Content" required></textarea>
+        <button type="submit">Publish</button>
+      </form>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

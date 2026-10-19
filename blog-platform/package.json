@@ -1,0 +1,16 @@
+{
+  "name": "blog-platform-midterm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mini blog platform with JWT authentication",
+  "scripts": {
+    "auth": "bun auth-server/server.js",
+    "blog": "bun blog-api/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "node-localstorage": "^3.0.5"
+  }
+}
