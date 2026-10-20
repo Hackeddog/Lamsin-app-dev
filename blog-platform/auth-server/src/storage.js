@@ -4,16 +4,26 @@ const { LocalStorage } = require('node-localstorage');
 const storage = new LocalStorage(path.resolve(__dirname, '../../data/auth-storage'));
 const USERS_KEY = 'users';
 
-function loadUsers() {
+function readUsersFromLocalStorage() {
   try {
-    return JSON.parse(storage.getItem(USERS_KEY) || '[]');
+    const users = JSON.parse(storage.getItem(USERS_KEY) || '[]');
+    return Array.isArray(users) ? users : [];
   } catch (error) {
-    console.error('Unable to read users:', error);
+    console.error('Unable to read users from localStorage:', error);
     return [];
   }
 }
 
-function saveUsers(users) {
+// Keep the records in memory while the server is running, and use
+// node-localstorage as the persistent localStorage backing store.
+let users = readUsersFromLocalStorage();
+
+function loadUsers() {
+  return users;
+}
+
+function saveUsers(nextUsers) {
+  users = nextUsers;
   storage.setItem(USERS_KEY, JSON.stringify(users));
 }
 

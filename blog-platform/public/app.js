@@ -64,23 +64,31 @@ function showAuth(mode = 'login', notice = '') {
     const endpoint = registering ? '/register' : '/login';
     if (registering) body.role = $('#role').value;
 
-    const response = await fetch(`${AUTH_URL}${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await response.json();
-    if (!response.ok) return $('#auth-message').textContent = data.error;
+    try {
+      const response = await fetch(`${AUTH_URL}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        return $('#auth-message').textContent = data.error || 'Unable to complete the request.';
+      }
 
-    if (registering) {
-      return showAuth('login', 'Registration successful. Please log in.');
+      if (registering) {
+        return showAuth('login', 'Registration successful. Please log in.');
+      }
+
+      localStorage.setItem(ACCESS_KEY, data.accessToken);
+      localStorage.setItem(REFRESH_KEY, data.refreshToken);
+      panel.classList.add('hidden');
+      $('#auth-button').textContent = 'Logout';
+      $('#editor').classList.remove('hidden');
+    } catch (error) {
+      console.error('Authentication request failed:', error);
+      $('#auth-message').textContent = 'Unable to connect to the authentication server.';
     }
 
-    localStorage.setItem(ACCESS_KEY, data.accessToken);
-    localStorage.setItem(REFRESH_KEY, data.refreshToken);
-    panel.classList.add('hidden');
-    $('#auth-button').textContent = 'Logout';
-    $('#editor').classList.remove('hidden');
   });
 }
 

@@ -1,6 +1,6 @@
 # Blog Platform Midterm
 
-Two Express servers implementing JWT authentication, role-based authorization, and localStorage-compatible persistence.
+Two Express servers implementing JWT authentication, role-based authorization, and localStorage persistence. Users and posts are loaded into in-memory arrays at startup and written back to `node-localstorage` after every change.
 
 ## Setup
 
@@ -17,11 +17,11 @@ Copy `.env.example` to `.env` and set a strong `JWT_SECRET`.
 Use two terminals:
 
 ```bash
-npm run auth
+bun run auth
 ```
 
 ```bash
-npm run blog
+bun run blog
 ```
 
 - Auth Server: http://localhost:4000

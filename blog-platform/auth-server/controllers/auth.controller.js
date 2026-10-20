@@ -23,7 +23,10 @@ function createRefreshToken(user) {
 
 function register(req, res) {
   const { username, password, role } = req.body || {};
-  if (!username || !password || !role) {
+  const normalizedUsername = typeof username === 'string' ? username.trim() : '';
+  const normalizedPassword = typeof password === 'string' ? password : '';
+
+  if (!normalizedUsername || !normalizedPassword || !role) {
     return res.status(400).json({ error: 'username, password, and role are required' });
   }
   if (!ALLOWED_ROLES.includes(role)) {
@@ -31,23 +34,31 @@ function register(req, res) {
   }
 
   const users = loadUsers();
-  const normalizedUsername = String(username).trim();
-  if (users.some((user) => user.username.toLowerCase() === normalizedUsername.toLowerCase())) {
+  const usernameTaken = users.some(
+    (user) => typeof user?.username === 'string'
+      && user.username.toLowerCase() === normalizedUsername.toLowerCase()
+  );
+  if (usernameTaken) {
     return res.status(409).json({ error: 'username is already taken' });
   }
 
   const user = {
     id: crypto.randomUUID(),
     username: normalizedUsername,
-    hashed_password: hashPassword(String(password)),
+    hashed_password: hashPassword(normalizedPassword),
     role,
     refresh_token: null,
     created_at: new Date().toISOString(),
     revoked_at: null
   };
 
-  users.push(user);
-  saveUsers(users);
+  try {
+    saveUsers([...users, user]);
+  } catch (error) {
+    console.error('Unable to register user:', error);
+    return res.status(500).json({ error: 'unable to create account' });
+  }
+
   return res.status(201).json({
     id: user.id,
     username: user.username,
@@ -58,12 +69,18 @@ function register(req, res) {
 
 function login(req, res) {
   const { username, password } = req.body || {};
-  if (!username || !password) {
+  const normalizedUsername = typeof username === 'string' ? username.trim() : '';
+  const normalizedPassword = typeof password === 'string' ? password : '';
+  if (!normalizedUsername || !normalizedPassword) {
     return res.status(400).json({ error: 'username and password are required' });
   }
 
-  const user = loadUsers().find((candidate) => candidate.username === username);
-  if (!user || !verifyPassword(String(password), user.hashed_password)) {
+  const users = loadUsers();
+  const user = users.find(
+    (candidate) => typeof candidate?.username === 'string'
+      && candidate.username.toLowerCase() === normalizedUsername.toLowerCase()
+  );
+  if (!user || !verifyPassword(normalizedPassword, user.hashed_password)) {
     return res.status(401).json({ error: 'invalid credentials' });
   }
 
@@ -71,7 +88,6 @@ function login(req, res) {
   const refreshToken = createRefreshToken(user);
   user.refresh_token = refreshToken;
   user.revoked_at = null;
-  const users = loadUsers();
   const index = users.findIndex((candidate) => candidate.id === user.id);
   users[index] = user;
   saveUsers(users);
