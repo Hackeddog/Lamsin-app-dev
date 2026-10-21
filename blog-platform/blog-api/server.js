@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.static(path.resolve(__dirname, '../public')));
 app.use('/api', postRoutes);
 app.use('/api', (req, res) => res.status(404).json({ error: 'endpoint not found' }));
-app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, '../public/index.html')));
+app.get('/{*splat}', (req, res) => res.sendFile(path.resolve(__dirname, '../public/index.html')));
 app.use((error, req, res, next) => {
   console.error(error);
   res.status(500).json({ error: 'internal server error' });
