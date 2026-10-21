@@ -5,6 +5,9 @@ main { width: min(900px, 92%); margin: 2rem auto; }
 .panel { background: white; padding: 1.25rem; margin-bottom: 1.25rem; border-radius: 10px; box-shadow: 0 2px 8px #0001; }
 article { border-bottom: 1px solid #ddd; padding: .75rem 0; }
 article:last-child { border-bottom: 0; }
+.post-actions { margin-top: .75rem; }
+.delete-post-button { background: #dc2626; }
+.delete-post-button:disabled { opacity: .6; cursor: wait; }
 form { display: grid; gap: .75rem; }
 input, textarea, button { font: inherit; padding: .7rem; border: 1px solid #cbd5e1; border-radius: 6px; }
 textarea { min-height: 120px; resize: vertical; }

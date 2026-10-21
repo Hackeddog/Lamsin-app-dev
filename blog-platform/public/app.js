@@ -8,6 +8,24 @@ const $ = (selector) => document.querySelector(selector);
 function accessToken() { return localStorage.getItem(ACCESS_KEY); }
 function refreshToken() { return localStorage.getItem(REFRESH_KEY); }
 
+function accessTokenPayload() {
+  const token = accessToken();
+  if (!token) return null;
+
+  try {
+    const encodedPayload = token.split('.')[1];
+    const base64Payload = encodedPayload.replace(/-/g, '+').replace(/_/g, '/');
+    const paddedPayload = base64Payload.padEnd(base64Payload.length + (4 - base64Payload.length % 4) % 4, '=');
+    return JSON.parse(atob(paddedPayload));
+  } catch (error) {
+    return null;
+  }
+}
+
+function isAdmin() {
+  return accessTokenPayload()?.role === 'admin';
+}
+
 async function refreshAccessToken() {
   if (!refreshToken()) return false;
   const response = await fetch(`${AUTH_URL}/refresh`, {
@@ -35,8 +53,21 @@ async function loadPosts() {
   const response = await fetch(`${API_URL}/posts`);
   const posts = await response.json();
   $('#posts').innerHTML = posts.length
-    ? posts.map((post) => `<article><h3>${escapeHtml(post.title)}</h3><p>${escapeHtml(post.content)}</p><small>Author: ${post.user_id}</small></article>`).join('')
+    ? posts.map((post) => `<article><h3>${escapeHtml(post.title)}</h3><p>${escapeHtml(post.content)}</p><small>Author: ${escapeHtml(post.user_id)}</small>${isAdmin() ? `<div class="post-actions"><button type="button" class="delete-post-button" data-post-id="${escapeHtml(post.id)}">Delete</button></div>` : ''}</article>`).join('')
     : '<p>No posts yet.</p>';
+}
+
+async function deletePost(postId) {
+  if (!window.confirm('Are you sure you want to delete this post?')) return;
+
+  const response = await apiFetch(`${API_URL}/posts/${encodeURIComponent(postId)}`, { method: 'DELETE' });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    return window.alert(data.error || 'Unable to delete the post.');
+  }
+
+  await loadPosts();
+  if (!$('#my-posts').classList.contains('hidden')) await loadMyPosts();
 }
 
 async function loadMyPosts() {
@@ -103,6 +134,7 @@ function showAuth(mode = 'login', notice = '') {
       $('#auth-button').textContent = 'Logout';
       $('#editor').classList.remove('hidden');
       $('#my-posts').classList.remove('hidden');
+      await loadPosts();
     } catch (error) {
       console.error('Authentication request failed:', error);
       $('#auth-message').textContent = 'Unable to connect to the authentication server.';
@@ -132,6 +164,18 @@ $('#post-form').addEventListener('submit', async (event) => {
 });
 
 $('#load-my-posts').addEventListener('click', loadMyPosts);
+
+$('#posts').addEventListener('click', async (event) => {
+  const button = event.target.closest('.delete-post-button');
+  if (!button) return;
+
+  button.disabled = true;
+  try {
+    await deletePost(button.dataset.postId);
+  } finally {
+    button.disabled = false;
+  }
+});
 
 if (accessToken() || refreshToken()) {
   $('#auth-button').textContent = 'Logout';
